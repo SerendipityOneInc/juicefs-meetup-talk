@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-themes="blueprint,tokyo-night,catppuccin-mocha,dracula,corporate-clean">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>星辰征途 · 面向多云多模态 AIGC 业务的统一存储实践</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" id="theme-link" href="assets/themes/blueprint.css">
+<link rel="stylesheet" href="assets/animations/animations.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  /* deck-local overrides for blueprint readability */
+  .tpl-presenter-mode-reveal .accent{ color: var(--accent-3); }
+  .tpl-presenter-mode-reveal .arch{ display:flex; flex-direction:column; gap:12px; margin-top:24px; }
+  .tpl-presenter-mode-reveal .arch .band{ border:1px dashed var(--border-strong); border-radius:4px; padding:13px 18px; text-align:center; background:rgba(255,255,255,.05); }
+  .tpl-presenter-mode-reveal .arch .band .lbl{ font-size:11px; color:var(--text-3); letter-spacing:.12em; text-transform:uppercase; margin-bottom:5px; }
+  .tpl-presenter-mode-reveal .arch .band .val{ font-size:15px; color:var(--text-1); font-weight:600; }
+  .tpl-presenter-mode-reveal .arch .cols{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .tpl-presenter-mode-reveal .arch .flow{ text-align:center; color:var(--accent-2); font-size:18px; line-height:1; margin:-4px 0; }
+  .tpl-presenter-mode-reveal .archimg{ width:100%; max-width:1060px; display:block; margin:14px auto 0; }
+  .tpl-presenter-mode-reveal .bignum{ font-size:clamp(38px,5.5vw,68px); font-weight:800; color:var(--accent-3); line-height:1; }
+  .tpl-presenter-mode-reveal .kpi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:28px; }
+  .tpl-presenter-mode-reveal .kpi{ border:1px dashed var(--border-strong); border-radius:4px; padding:24px 16px; text-align:center; }
+  .tpl-presenter-mode-reveal .kpi .lbl{ font-size:13px; color:var(--text-2); margin-top:10px; line-height:1.4; }
+  .tpl-presenter-mode-reveal .dtable{ width:100%; border-collapse:collapse; margin-top:20px; font-size:13.5px; }
+  .tpl-presenter-mode-reveal .dtable th,.tpl-presenter-mode-reveal .dtable td{ border:1px solid var(--border); padding:8px 11px; text-align:left; color:var(--text-2); vertical-align:top; }
+  .tpl-presenter-mode-reveal .dtable th{ color:var(--text-1); background:rgba(255,255,255,.07); font-weight:700; }
+  .tpl-presenter-mode-reveal .dtable td strong{ color:var(--accent-3); }
+  .tpl-presenter-mode-reveal .dtable .win{ color:var(--good); font-weight:700; }
+  .tpl-presenter-mode-reveal .quote{ border-left:3px solid var(--accent-3); padding:14px 22px; margin-top:26px; font-size:21px; line-height:1.5; color:var(--text-1); background:rgba(255,255,255,.04); }
+  .tpl-presenter-mode-reveal .timeline{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:26px; align-items:stretch; }
+  .tpl-presenter-mode-reveal .tl{ border:1px dashed var(--border-strong); border-radius:4px; padding:18px; }
+  .tpl-presenter-mode-reveal .tl .ph{ font-size:12px; color:var(--text-3); letter-spacing:.1em; text-transform:uppercase; }
+  .tpl-presenter-mode-reveal .tl .big{ font-size:30px; font-weight:800; color:var(--text-1); margin:8px 0; }
+  .tpl-presenter-mode-reveal .tl.final .big{ color:var(--accent-3); }
+  .tpl-presenter-mode-reveal .tl .sub{ font-size:13px; color:var(--text-2); line-height:1.5; }
+  .tpl-presenter-mode-reveal .thanks-row{ display:flex; align-items:center; gap:60px; min-height:74%; }
+  .tpl-presenter-mode-reveal .thanks-left{ flex:1.05; }
+  .tpl-presenter-mode-reveal .thanks-right{ flex:1; }
+  .tpl-presenter-mode-reveal .zooclaw{ border:1.5px dashed var(--accent-3); border-radius:6px; padding:28px 30px; background:rgba(255,210,122,.06); }
+  .tpl-presenter-mode-reveal .zooclaw .zc-head{ font-size:24px; font-weight:800; color:var(--accent-3); }
+  .tpl-presenter-mode-reveal .zooclaw .zc-sub{ font-size:15px; color:var(--text-2); margin-top:8px; line-height:1.55; }
+  .tpl-presenter-mode-reveal .zooclaw .zc-cta{ font-size:17px; color:var(--text-1); margin-top:14px; font-weight:600; }
+</style>
+</head>
+<body class="tpl-presenter-mode-reveal">
+<div class="deck">
+
+  <!-- ============ 1. COVER ============ -->
+  <section class="slide" data-title="封面">
+    <p class="kicker">JuiceFS Shanghai Meetup · Talk 2 · 星辰征途</p>
+    <h1 class="h1 anim-fade-up" data-anim="fade-up">面向多云多模态 AIGC 业务的<br><span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">统一存储实践</span></h1>
+    <p class="lede mt-m">一套云中立的统一存储 · 全场景分治优化 · 低成本 × 高性能</p>
+    <div class="speaker">
+      <div class="av"></div>
+      <div><b>朱广彬</b><span>星辰征途 · 基础设施团队</span></div>
+    </div>
+    <div class="deck-footer">
+      <span class="mono">#JuiceFS #多云 #AIGC #统一存储</span>
+      <span class="slide-number" data-current="1" data-total="19"></span>
+    </div>
+  </section>
+
+  <!-- ============ 2. SCALE NUMBERS ============ -->
+  <section class="slide" data-title="规模">
+    <p class="kicker">// 我们是谁 · 生产规模</p>
+    <h2 class="h2">星辰征途:AI 搜索 + 电商场景的 <span class="accent">多模态 AIGC</span> 公司</h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="bignum">1亿+</div><div class="lbl">JuiceFS 管理的文件数</div></div>
+      <div class="kpi"><div class="bignum">3</div><div class="lbl">朵云<br>Oracle · DigitalOcean · GCP</div></div>
+      <div class="kpi"><div class="bignum">1年+</div><div class="lbl">生产环境稳定运行</div></div>
+    </div>
+  </section>
+
+  <!-- ============ 3. AGENDA ============ -->
+  <section class="slide" data-title="议程">
+    <p class="kicker">agenda</p>
+    <h2 class="h2">今天的内容</h2>
+    <div class="stack mt-l">
+      <div class="agenda-row"><span class="num">01</span><span class="t">统一存储需求与建设思路</span><span class="d">~5min</span></div>
+      <div class="agenda-row"><span class="num">02</span><span class="t">选型:从 GCS Fuse / S3 Fuse 到 JuiceFS</span><span class="d">~5min</span></div>
+      <div class="agenda-row"><span class="num">03</span><span class="t">新架构:JuiceFS 在多云的部署(双场景)</span><span class="d">~7min</span></div>
+      <div class="agenda-row"><span class="num">04</span><span class="t">实践:分布式缓存 / writeback / S3 Gateway</span><span class="d">~8min</span></div>
+      <div class="agenda-row"><span class="num">05</span><span class="t">总结与 Q&amp;A</span><span class="d">~3min</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 4. FOUR SCENARIOS ============ -->
+  <section class="slide" data-title="四类场景">
+    <p class="kicker">// part 01 · 需求</p>
+    <h2 class="h2">四类场景,<span class="accent">四种 I/O 诉求</span></h2>
+    <img class="archimg" src="four-scenarios.svg" alt="四类场景围绕 JuiceFS 统一存储层:训练/推理/数据处理/线上 Agent 各自的 I/O 诉求">
+    <p class="lede tc" style="margin-top:14px">共同诉求:<span class="accent">低成本 · 云中立 · 离线高吞吐 · 线上高并发 · 对象接口</span></p>
+  </section>
+
+  <!-- ============ 5. CLOUD NEUTRAL = ECONOMICS ============ -->
+  <section class="slide" data-title="云中立">
+    <p class="kicker">// part 01 · 建设思路</p>
+    <h2 class="h2">云中立不是理念,是<span class="accent">议价能力</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="card"><h4>🖥️ 离线:跟着最便宜的 GPU 走</h4><p class="dim">哪里 GPU 便宜,算力就部署到哪里。存储统一在 JuiceFS 上 = <strong>"移动计算、共享存储"</strong>。</p></div>
+      <div class="card"><h4>💻 在线:跟着最便宜的 CPU VM 走</h4><p class="dim">哪里 VM 便宜就部署到哪里。今天 GCP,明天可能 Azure 或任意更便宜的 region。</p></div>
+    </div>
+    <p class="lede mt-m tc">工程基座:<span class="accent">统一 Terraform 编排 + K8S</span> → 换云一键拉起,存储层零改动。</p>
+  </section>
+
+  <!-- ============ 6. DATA FOUNDATION + DX ============ -->
+  <section class="slide" data-title="数据基础层">
+    <p class="kicker">// part 01 · 数据处理思路 + 开发者体验</p>
+    <h2 class="h2">数据基础层 + <span class="accent">透明的 POSIX 体验</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="card card-accent"><h4>🔁 处理一次,复用多次</h4><p class="dim">Ray Data 并行(KubeRay / Slurm)把海量小文件预处理成 <strong>parquet 大文件</strong>(单文件 10万~100万行),做下游 embedding/检索/推荐的"数据基础层"。</p></div>
+      <div class="card card-accent"><h4>🗂️ 整个 /data/srp 透明挂载</h4><p class="dim">代码里看不到 "JuiceFS" 字样,只用普通 POSIX 路径。<strong>开发机和集群同一套路径,所有数据当成一块本地盘。</strong></p></div>
+    </div>
+    <div class="quote">对工程师而言,最好的多云存储,是让他们感觉不到"多云"、也感觉不到"存储"——只有一块永远在那儿的本地盘。</div>
+  </section>
+
+  <!-- ============ 7. OFFLINE SELECTION TABLE ============ -->
+  <section class="slide" data-title="离线选型">
+    <p class="kicker">// part 02 · 离线选型</p>
+    <h2 class="h2">离线:调研业界主流方案后,<span class="accent">一开始就选了 JuiceFS</span></h2>
+    <table class="dtable">
+      <thead><tr><th>方案</th><th>云中立</th><th>POSIX</th><th>高吞吐</th><th>分布式缓存</th><th>成本/运维</th></tr></thead>
+      <tbody>
+        <tr><td>自建并行 FS(比如 Lustre)</td><td>❌ 绑硬件</td><td>✅</td><td>✅✅</td><td>部分</td><td>贵 / 重</td></tr>
+        <tr><td>云托管并行 FS(比如 FileStore)</td><td>❌ 锁单云</td><td>✅</td><td>✅</td><td>✅</td><td>贵 / 轻</td></tr>
+        <tr><td>对象存储 + FUSE(S3FS/GCS Fuse)</td><td>⚠️ 锁云</td><td>❌</td><td>❌</td><td>❌</td><td>便宜 / 轻</td></tr>
+        <tr><td>缓存编排层(Alluxio/Fluid)</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td><td>需叠底层 / 重</td></tr>
+        <tr><td><strong>JuiceFS</strong></td><td class="win">✅ 后端任选</td><td class="win">✅ 完整</td><td class="win">✅</td><td class="win">✅ 内建</td><td class="win">对象成本 / CSI</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 8. AGENT SELECTION - FUSE PAINS ============ -->
+  <section class="slide" data-title="Agent选型痛点">
+    <p class="kicker">// part 02 · Agent 选型</p>
+    <h2 class="h2">Agent:从 GCS Fuse <span class="accent">踩坑</span>,迁到 JuiceFS</h2>
+    <div class="grid g3 mt-l">
+      <div class="card card-accent"><h4>💥 SIGKILL 丢数据</h4><p class="dim">异步 write-back,数据还在本地缓冲就被 OOM kill → <strong>永久丢失</strong>。对象存储没有 fsync 语义。</p></div>
+      <div class="card card-accent"><h4>🐌 小文件高延迟</h4><p class="dim">每次 open/stat 加 50-200ms;POSIX 语义不全(rename/flock/symlink)。</p></div>
+      <div class="card card-accent"><h4>🔒 被云绑定</h4><p class="dim"><strong>GCS Fuse 只能 GCP 内用</strong> + 高并发不稳定 → 直接违背云中立。</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 9. JUICEFS WRITE PATH ============ -->
+  <section class="slide" data-title="原子提交">
+    <p class="kicker">// part 02 · 为什么 JuiceFS 能解</p>
+    <h2 class="h2">差别在那层<span class="accent">独立的元数据引擎</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="card"><h4>❌ GCS Fuse:写成功 ≠ 落地</h4><p class="dim">write() 返回 → 数据还在本地异步缓冲 → 刷盘前 crash → <strong>丢失窗口</strong>。</p></div>
+      <div class="card card-accent"><h4>✅ JuiceFS:写成功 = 已落地</h4><p class="dim">数据 chunk 先上传对象存储 → 元数据<strong>原子提交</strong> → 才返回成功。SIGKILL 不丢已确认数据。</p></div>
+    </div>
+    <div class="quote">FUSE 系是"把对象存储伪装成文件系统";JuiceFS 是"用对象存储做一个<span class="accent">真正的</span>文件系统"。</div>
+  </section>
+
+  <!-- ============ 10. ARCH A: OFFLINE CROSS-CLOUD ============ -->
+  <section class="slide" data-title="架构A离线">
+    <p class="kicker">// part 03 · 架构 A · 离线跨云</p>
+    <h2 class="h2">离线:多云算力漂移,<span class="accent">统一元数据 + R2</span></h2>
+    <img class="archimg" src="offline-arch.svg" alt="离线跨云架构:Oracle + DigitalOcean 双云,统一元数据,R2,GPU 本地 NVMe 分布式缓存">
+  </section>
+
+  <!-- ============ 11. ARCH B: ONLINE AGENT ============ -->
+  <section class="slide" data-title="架构B在线">
+    <p class="kicker">// part 03 · 架构 B · 在线 Agent</p>
+    <h2 class="h2">在线:单云贴身,<span class="accent">独立元数据 + GCS</span></h2>
+    <img class="archimg" src="online-arch.svg" alt="在线 Agent 架构:GCP 单云,独立 3 节点 Raft 元数据,GCS,JuiceFS CSI 每 bot subPath">
+  </section>
+
+  <!-- ============ 12. DECISION CONTRAST + QUOTES ============ -->
+  <section class="slide" data-title="决策对比">
+    <p class="kicker">// part 03 · 为什么相反</p>
+    <h2 class="h2">同一个 JuiceFS,<span class="accent">相反的决策</span></h2>
+    <table class="dtable">
+      <thead><tr><th>维度</th><th>离线跨云</th><th>在线 Agent</th></tr></thead>
+      <tbody>
+        <tr><td>首要目标</td><td>算力漂移、跨云共享</td><td>在线低延迟、高并发稳定</td></tr>
+        <tr><td>元数据</td><td><strong>统一</strong>(跨云共享一份)</td><td><strong>独立</strong>(单云内网 Raft)</td></tr>
+        <tr><td>对象存储</td><td><strong>R2</strong>(免 egress)</td><td><strong>GCS</strong>(本云低延迟)</td></tr>
+        <tr><td>取舍逻辑</td><td>跨云不掏 egress 费</td><td>元数据/数据贴着算力,压低 RTT</td></tr>
+      </tbody>
+    </table>
+    <div class="quote">① 云中立 ≠ 一个后端打天下,而是<span class="accent">有能力按场景选最优后端</span>,上层零改动。<br>② <span class="accent">元数据局部性,是性能的地板。</span></div>
+  </section>
+
+  <!-- ============ 13. DISTRIBUTED CACHE: OFFLINE VS ONLINE ============ -->
+  <section class="slide" data-title="分布式缓存">
+    <p class="kicker">// part 04 · 实践 · 分布式缓存</p>
+    <h2 class="h2">同一个缓存,<span class="accent">两套优化策略</span></h2>
+    <table class="dtable">
+      <thead><tr><th>配置</th><th>离线 Slurm(读优化)</th><th>在线 Agent(写优化 + 元数据调优)</th></tr></thead>
+      <tbody>
+        <tr><td>缓存容量</td><td>cache-size=-1(用满整盘)</td><td>cache-size≈600GB(双 NVMe)</td></tr>
+        <tr><td>元数据 TTL</td><td><strong>默认,不调</strong></td><td><strong>attr/entry/dir 提到 3600s</strong></td></tr>
+        <tr><td>writeback</td><td><strong>不开</strong></td><td><strong>开</strong></td></tr>
+        <tr><td>特殊</td><td>流式只读用 cache-size=0</td><td>prefetch / open-cache / timeout=10</td></tr>
+      </tbody>
+    </table>
+    <p class="lede mt-m">模型是 <strong>provider/consumer</strong>:GPU 节点组 cache-group 共享缓存块,客户端 <span class="mono">--no-sharing</span> 只读。<br>反直觉坑:<span class="accent">attr-cache TTL 太短会"杀死"分布式缓存</span> → 1s 提到 3600s,peer 间稳定 7-15 MB/s。</p>
+  </section>
+
+  <!-- ============ 13b. OFFLINE PERF ============ -->
+  <section class="slide" data-title="离线性能实测">
+    <p class="kicker">// part 04 · 实践 · 离线性能实测</p>
+    <h2 class="h2">离线实测:写吞吐 <span class="accent">~4×</span>,缓存命中读 <span class="accent">7-8 GB/s</span></h2>
+    <table class="dtable">
+      <thead><tr><th>测试项(JuiceFS on R2 · 离线)</th><th>无优化基线</th><th>优化后(分布式缓存 + 调参)</th></tr></thead>
+      <tbody>
+        <tr><td>顺序写 · 大块</td><td>~231 MB/s</td><td class="win">~714 MB/s</td></tr>
+        <tr><td>顺序写 · 大批量 20-50GB</td><td>~256-265 MB/s</td><td class="win">840 MB/s ~ 1.1 GB/s</td></tr>
+        <tr><td>顺序读 · 分布式缓存命中</td><td>—</td><td class="win">6.7 ~ 7.8 GB/s</td></tr>
+        <tr><td>顺序读 · 冷读回源 R2</td><td>—</td><td>~427 MB/s</td></tr>
+      </tbody>
+    </table>
+    <p class="lede tc" style="margin-top:16px">写吞吐 <span class="accent">~250 MB/s → ~1.1 GB/s</span> · 缓存命中打满本地 NVMe · 冷读回源是首读瓶颈,缓存兜住</p>
+  </section>
+
+  <!-- ============ 14. WRITEBACK ============ -->
+  <section class="slide" data-title="Writeback">
+    <p class="kicker">// part 04 · 实践 · writeback</p>
+    <h2 class="h2">Writeback = 用<span class="accent">数据安全</span>换<span class="accent">写吞吐</span></h2>
+    <div class="grid g2 mt-l">
+      <div class="card"><h4>🟢 Agent:开</h4><p class="dim">大文件产物多、延迟敏感,愿意用可接受的丢数据风险换 <strong>大文件吞吐 +85%</strong>(75→140 MB/s)。</p></div>
+      <div class="card card-accent"><h4>🔵 离线:不开</h4><p class="dim">大文件顺序写 IO 本就够好;checkpoint/数据基础层<strong>难重算,crash 丢数据风险不可接受</strong>。</p></div>
+    </div>
+    <p class="lede mt-m">两个坑:① writeback <strong>不解决</strong>小文件 close() 延迟(那是元数据 RTT bound);② cache-dir <span class="accent">必须持久化盘</span>,tmpfs 会静默退回同步写。</p>
+  </section>
+
+  <!-- ============ 15. S3 GATEWAY ============ -->
+  <section class="slide" data-title="S3 Gateway">
+    <p class="kicker">// part 04 · 实践 · S3 Gateway</p>
+    <h2 class="h2">一份数据,<span class="accent">多种接口</span></h2>
+    <div class="code-block mt-m">
+<span class="comment"># 对外提供 Agent 产物(artifacts)访问</span>
+artifacts.xxx.ai/{botId}/...
+   <span class="flag">→</span> Cloudflare CDN
+   <span class="flag">→</span> Cloudflare Worker   <span class="comment"># 路径校验</span>
+   <span class="flag">→</span> JuiceFS S3 Gateway  <span class="comment"># single-bucket + IAM 路径隔离 + --keep-etag</span>
+   <span class="flag">→</span> 元数据查询 + 对象存储取 chunk
+    </div>
+    <p class="lede mt-m">为什么不用 POSIX 挂载?消费方是 <strong>CDN / Worker / Web</strong>,天然说 S3。<br><span class="accent">内部训练走 POSIX 挂载,对外分发走 S3 接口——同一份数据。</span></p>
+  </section>
+
+  <!-- ============ 16. PERF EVOLUTION 42x ============ -->
+  <section class="slide" data-title="性能演进">
+    <p class="kicker">// part 04 · 实践 · 性能演进</p>
+    <h2 class="h2">42× 从哪来?<span class="accent">把元数据搬进同一朵云</span></h2>
+    <div class="timeline">
+      <div class="tl"><div class="ph">起点 · OCI 元数据 + R2</div><div class="big">~24<span style="font-size:14px"> files/s</span></div><div class="sub">跨公网 RTT 12.7ms;R2 偶发 30s PUT 超时打挂 bot。</div></div>
+      <div class="tl"><div class="ph">Phase 1-2 · 调优</div><div class="big">大文件 +85%</div><div class="sub">writeback + TTL 解锁分布式缓存;但小文件还慢,元数据仍跨公网。</div></div>
+      <div class="tl final"><div class="ph">Phase 3 · GCP 内网元数据</div><div class="big">~1000<span style="font-size:14px"> files/s</span></div><div class="sub">RTT → 5.8ms;同区 GCS;NVMe 缓存。<strong>小文件写 ~42×</strong>。</div></div>
+    </div>
+    <p class="lede mt-m tc">最大功臣不是缓存盘,是<span class="accent">元数据局部性</span>——那条金句的最佳注脚。</p>
+  </section>
+
+  <!-- ============ 17. BENEFITS + CLOSING ============ -->
+  <section class="slide" data-title="收益">
+    <p class="kicker">// part 05 · 总结 + 主线回扣</p>
+    <h2 class="h2">落地一年多 · <span class="accent">关键收益</span></h2>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="bignum">42×</div><div class="lbl"><span class="accent">在线</span> · 小文件写入提升<br>(Agent,搬进内网元数据后)</div></div>
+      <div class="kpi"><div class="bignum">~4×</div><div class="lbl"><span class="accent">离线</span> · 写吞吐提升<br>(分布式缓存 + 调参)</div></div>
+      <div class="kpi"><div class="bignum">1年+</div><div class="lbl"><span class="accent">稳定性</span> · 生产稳定运行<br>(1亿+ 文件,横跨三朵云)</div></div>
+    </div>
+    <p class="lede tc" style="margin-top:16px">在线大文件吞吐 <span class="accent">+85%</span> · 元数据 RTT <span class="accent">12.7→5.8ms</span> · 离线缓存命中读 <span class="accent">7-8 GB/s</span> · R2 偶发 30s 超时<span class="accent">归零</span></p>
+    <div class="quote">让算力成本变成一个<span class="accent">可议价、可迁移</span>的变量——而统一存储,是这件事的地基。</div>
+  </section>
+
+  <!-- ============ 18. THANKS / Q&A ============ -->
+  <section class="slide" data-title="Q&A">
+    <div class="thanks-row">
+      <div class="thanks-left">
+        <p class="kicker">thanks</p>
+        <h1 class="h1">谢谢大家<br><span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">Q &amp; A</span></h1>
+        <p class="lede mt-m">云中立 · 全场景分治优化 · 低成本 × 高性能</p>
+      </div>
+      <div class="thanks-right">
+        <div class="zooclaw">
+          <div class="zc-head">🐾 ZooClaw</div>
+          <div class="zc-sub" style="font-size:17px;color:var(--accent-3);font-weight:700;margin-top:4px">你的主动式 AI Agent 团队</div>
+          <div class="zc-sub">不是又一个 AI 助手,而是一支随叫随到的 AI 专家团队。<br>免配置 · 免部署 · 无需 API key,网页 + iOS App 开箱即用。</div>
+          <div class="zc-cta">立即体验 → <span class="accent">zooclaw.ai</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="deck-footer">
+      <span class="mono">星辰征途 · JuiceFS Meetup</span>
+      <span class="slide-number" data-current="19" data-total="19"></span>
+    </div>
+  </section>
+
+</div>
+
+<div style="position:fixed;bottom:12px;left:12px;font-size:11px;color:#9bc4e688;z-index:100;pointer-events:none">
+  S 演讲者视图 · T 切换主题 · ← → 翻页 · F 全屏 · O 总览 · R 重置计时
+</div>
+
+<script src="assets/runtime.js"></script>
+</body>
+</html>

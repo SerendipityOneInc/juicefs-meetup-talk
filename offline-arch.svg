@@ -1,0 +1,75 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono','IBM Plex Mono',monospace">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#aee1ff"/>
+    </marker>
+    <style>
+      .card{ fill:rgba(255,255,255,.05); stroke:#bedcff; stroke-width:1.5; stroke-dasharray:5 4; }
+      .bar{ fill:rgba(255,255,255,.05); stroke:#bedcff; stroke-width:1.5; stroke-dasharray:5 4; }
+      .barGold{ fill:rgba(255,210,122,.08); stroke:#ffd27a; stroke-width:1.8; stroke-dasharray:6 4; }
+      .chip{ fill:rgba(174,225,255,.10); stroke:#7da8cf; stroke-width:1; }
+      .t1{ fill:#e8f3ff; } .t2{ fill:#b8d4f0; } .t3{ fill:#7da8cf; } .gold{ fill:#ffd27a; }
+      .ln{ stroke:#aee1ff; stroke-width:1.6; }
+      .tag{ fill:#5e88ad; font-size:12px; letter-spacing:.12em; }
+    </style>
+  </defs>
+
+  <!-- layer tags (left rail) -->
+  <text class="tag" x="20" y="92"  transform="rotate(-90 20 92)"  text-anchor="middle">算力 COMPUTE</text>
+  <text class="tag" x="20" y="245" transform="rotate(-90 20 245)" text-anchor="middle">元数据 META</text>
+  <text class="tag" x="20" y="360" transform="rotate(-90 20 360)" text-anchor="middle">缓存 CACHE</text>
+  <text class="tag" x="20" y="475" transform="rotate(-90 20 475)" text-anchor="middle">对象 OBJECT</text>
+
+  <!-- top caption -->
+  <text class="t3" x="600" y="20" text-anchor="middle" font-size="13">哪里 GPU 便宜部署在哪里 · 算力漂移 · Slinky Slurm on K8S</text>
+
+  <!-- cloud A -->
+  <rect class="card" x="60" y="34" width="480" height="120" rx="5"/>
+  <text class="t1" x="300" y="68" text-anchor="middle" font-size="22" font-weight="700">Oracle OKE</text>
+  <text class="t2" x="300" y="92" text-anchor="middle" font-size="14">H100 · vLLM + Slurm + KubeRay</text>
+  <rect class="chip" x="92"  y="108" width="190" height="32" rx="3"/>
+  <text class="t2" x="187" y="129" text-anchor="middle" font-size="12.5">GPU node + NVMe</text>
+  <rect class="chip" x="318" y="108" width="190" height="32" rx="3"/>
+  <text class="t2" x="413" y="129" text-anchor="middle" font-size="12.5">GPU node + NVMe</text>
+
+  <!-- cloud B -->
+  <rect class="card" x="660" y="34" width="480" height="120" rx="5"/>
+  <text class="t1" x="900" y="68" text-anchor="middle" font-size="22" font-weight="700">DigitalOcean DOKS</text>
+  <text class="t2" x="900" y="92" text-anchor="middle" font-size="14">H200 · NYC2 / ATL1</text>
+  <rect class="chip" x="692"  y="108" width="190" height="32" rx="3"/>
+  <text class="t2" x="787" y="129" text-anchor="middle" font-size="12.5">GPU node + NVMe</text>
+  <rect class="chip" x="918" y="108" width="190" height="32" rx="3"/>
+  <text class="t2" x="1013" y="129" text-anchor="middle" font-size="12.5">GPU node + NVMe</text>
+
+  <!-- arrows compute -> metadata -->
+  <line class="ln" x1="300" y1="154" x2="300" y2="205" marker-end="url(#ar)"/>
+  <line class="ln" x1="900" y1="154" x2="900" y2="205" marker-end="url(#ar)"/>
+
+  <!-- metadata bar (spans both clouds) -->
+  <rect class="barGold" x="60" y="207" width="1080" height="66" rx="5"/>
+  <text class="gold" x="600" y="237" text-anchor="middle" font-size="18" font-weight="700">统一元数据服务 · Unified Metadata Service</text>
+  <text class="t2"   x="600" y="259" text-anchor="middle" font-size="13">跨双云共享 · 部署在 OCI · 两朵云 = 同一个文件系统、同一份数据</text>
+
+  <!-- arrows metadata <-> cache (hit / miss) -->
+  <line class="ln" x1="560" y1="320" x2="560" y2="273" marker-end="url(#ar)"/>
+  <text class="t3" x="548" y="300" text-anchor="end" font-size="12">cache hit ▲</text>
+  <line class="ln" x1="640" y1="273" x2="640" y2="320" marker-end="url(#ar)"/>
+  <text class="t3" x="652" y="300" text-anchor="start" font-size="12">▼ miss</text>
+
+  <!-- cache bar -->
+  <rect class="bar" x="60" y="322" width="1080" height="66" rx="5"/>
+  <text class="t1" x="84" y="352" font-size="17" font-weight="700">分布式缓存 · GPU 本地 NVMe</text>
+  <text class="t2" x="84" y="374" font-size="13">cache-group peer 共享 · 一节点拉取,邻居直接命中</text>
+  <text class="gold" x="1116" y="362" text-anchor="end" font-size="22" font-weight="800">300TB+ 缓存池</text>
+  <text class="t3"  x="1116" y="382" text-anchor="end" font-size="12">生产 6×H100 × 56TB</text>
+
+  <!-- arrow cache -> object -->
+  <line class="ln" x1="600" y1="388" x2="600" y2="435" marker-end="url(#ar)"/>
+
+  <!-- object bar -->
+  <rect class="bar" x="60" y="437" width="1080" height="66" rx="5"/>
+  <text class="t1" x="84" y="467" font-size="17" font-weight="700">Cloudflare R2 · 对象存储</text>
+  <text class="t2" x="84" y="489" font-size="13">跨云读写的统一数据池</text>
+  <rect x="940" y="452" width="176" height="36" rx="4" fill="rgba(255,210,122,.12)" stroke="#ffd27a" stroke-width="1.5"/>
+  <text class="gold" x="1028" y="475" text-anchor="middle" font-size="15" font-weight="700">免 egress 跨云不掏钱</text>
+</svg>

@@ -1,0 +1,46 @@
+<svg viewBox="0 0 1200 470" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono','IBM Plex Mono',monospace">
+  <defs>
+    <style>
+      .card{ fill:rgba(255,255,255,.05); stroke:#bedcff; stroke-width:1.5; stroke-dasharray:5 4; }
+      .hub{ fill:rgba(255,210,122,.08); stroke:#ffd27a; stroke-width:2; stroke-dasharray:6 4; }
+      .t1{ fill:#e8f3ff; } .t2{ fill:#b8d4f0; } .gold{ fill:#ffd27a; }
+      .spoke{ stroke:#7da8cf; stroke-width:1.4; stroke-dasharray:4 3; }
+      .trait{ fill:#aee1ff; font-size:13px; }
+    </style>
+  </defs>
+
+  <!-- spokes (drawn first, behind cards) -->
+  <line class="spoke" x1="500" y1="200" x2="470" y2="130"/>
+  <line class="spoke" x1="700" y1="200" x2="730" y2="130"/>
+  <line class="spoke" x1="500" y1="270" x2="470" y2="340"/>
+  <line class="spoke" x1="700" y1="270" x2="730" y2="340"/>
+
+  <!-- hub -->
+  <rect class="hub" x="450" y="190" width="300" height="90" rx="6"/>
+  <text class="gold" x="600" y="228" text-anchor="middle" font-size="20" font-weight="800">JuiceFS 统一存储层</text>
+  <text class="t2"   x="600" y="252" text-anchor="middle" font-size="12.5">一套技术栈,按场景分治后端</text>
+
+  <!-- TL 训练 -->
+  <rect class="card" x="60" y="40" width="440" height="100" rx="5"/>
+  <text class="t1"    x="84" y="74" font-size="17" font-weight="700">① 模型训练</text>
+  <text class="t2"    x="84" y="98" font-size="13">大文件顺序读 + checkpoint 周期写</text>
+  <text class="trait" x="84" y="120" font-size="13">→ 高吞吐 · 高性能离线 I/O</text>
+
+  <!-- TR 推理 -->
+  <rect class="card" x="700" y="40" width="440" height="100" rx="5"/>
+  <text class="t1"    x="724" y="74" font-size="17" font-weight="700">② 推理</text>
+  <text class="t2"    x="724" y="98" font-size="13">高并发读权重/数据 · 训推一体复用 checkpoint</text>
+  <text class="trait" x="724" y="120" font-size="13">→ 低延迟 · 命中本地缓存</text>
+
+  <!-- BL 数据处理 -->
+  <rect class="card" x="60" y="330" width="440" height="100" rx="5"/>
+  <text class="t1"    x="84" y="364" font-size="17" font-weight="700">③ 数据处理</text>
+  <text class="t2"    x="84" y="388" font-size="13">Ray Data 并行 → parquet "数据基础层"</text>
+  <text class="trait" x="84" y="410" font-size="13">→ IO 吞吐(小文件不适合,先聚合)</text>
+
+  <!-- BR 线上 Agent -->
+  <rect class="card" x="700" y="330" width="440" height="100" rx="5"/>
+  <text class="t1"    x="724" y="364" font-size="17" font-weight="700">④ 线上 Agent</text>
+  <text class="t2"    x="724" y="388" font-size="13">每 bot 工作空间 · 小文件高频读写</text>
+  <text class="trait" x="724" y="410" font-size="13">→ 在线低延迟 · 高并发稳定</text>
+</svg>

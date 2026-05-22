@@ -1,0 +1,72 @@
+<svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono','IBM Plex Mono',monospace">
+  <defs>
+    <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#aee1ff"/>
+    </marker>
+    <style>
+      .cloud{ fill:rgba(255,210,122,.05); stroke:#ffd27a; stroke-width:2; stroke-dasharray:8 5; }
+      .bar{ fill:rgba(255,255,255,.05); stroke:#bedcff; stroke-width:1.5; stroke-dasharray:5 4; }
+      .pod{ fill:rgba(174,225,255,.10); stroke:#7da8cf; stroke-width:1.2; }
+      .node{ fill:rgba(255,255,255,.06); stroke:#bedcff; stroke-width:1.5; }
+      .t1{ fill:#e8f3ff; } .t2{ fill:#b8d4f0; } .t3{ fill:#7da8cf; } .gold{ fill:#ffd27a; }
+      .ln{ stroke:#aee1ff; stroke-width:1.6; }
+      .lnp{ stroke:#7da8cf; stroke-width:1.2; stroke-dasharray:4 3; }
+      .tag{ fill:#5e88ad; font-size:12px; letter-spacing:.12em; }
+    </style>
+  </defs>
+
+  <!-- single cloud container -->
+  <rect class="cloud" x="48" y="20" width="1104" height="560" rx="8"/>
+  <text class="gold" x="72" y="48" font-size="16" font-weight="700">☁ GCP · us-east1 · 单朵云内,一切贴身</text>
+  <text class="t3"   x="1128" y="48" text-anchor="end" font-size="12">独立卷,不与离线场景联邦</text>
+
+  <!-- layer tags -->
+  <text class="tag" x="40" y="135" transform="rotate(-90 40 135)" text-anchor="middle">K8S</text>
+  <text class="tag" x="40" y="300" transform="rotate(-90 40 300)" text-anchor="middle">元数据 META</text>
+  <text class="tag" x="40" y="420" transform="rotate(-90 40 420)" text-anchor="middle">缓存 CACHE</text>
+  <text class="tag" x="40" y="525" transform="rotate(-90 40 525)" text-anchor="middle">对象 OBJECT</text>
+
+  <!-- K8S bot pods row -->
+  <text class="t2" x="600" y="84" text-anchor="middle" font-size="14">Kubernetes · JuiceFS CSI · 同一个 RWX PVC,每 bot 一个 subPath</text>
+  <g>
+    <rect class="pod" x="120" y="98" width="170" height="60" rx="4"/><text class="t1" x="205" y="125" text-anchor="middle" font-size="13">bot Pod</text><text class="t3" x="205" y="144" text-anchor="middle" font-size="11">/bots/{id}</text>
+    <rect class="pod" x="320" y="98" width="170" height="60" rx="4"/><text class="t1" x="405" y="125" text-anchor="middle" font-size="13">bot Pod</text><text class="t3" x="405" y="144" text-anchor="middle" font-size="11">/bots/{id}</text>
+    <rect class="pod" x="520" y="98" width="170" height="60" rx="4"/><text class="t1" x="605" y="125" text-anchor="middle" font-size="13">bot Pod</text><text class="t3" x="605" y="144" text-anchor="middle" font-size="11">/bots/{id}</text>
+    <rect class="pod" x="720" y="98" width="170" height="60" rx="4"/><text class="t1" x="805" y="125" text-anchor="middle" font-size="13">bot Pod</text><text class="t3" x="805" y="144" text-anchor="middle" font-size="11">/bots/{id}</text>
+    <rect class="pod" x="920" y="98" width="160" height="60" rx="4" stroke-dasharray="4 3"/><text class="t3" x="1000" y="132" text-anchor="middle" font-size="16">···</text>
+  </g>
+
+  <!-- arrow K8S -> metadata -->
+  <line class="ln" x1="600" y1="158" x2="600" y2="232" marker-end="url(#ar2)"/>
+
+  <!-- independent 3-node Raft metadata -->
+  <rect class="bar" x="120" y="234" width="960" height="120" rx="5"/>
+  <text class="t1" x="146" y="262" font-size="17" font-weight="700">独立元数据服务 · 3 节点 Raft</text>
+  <text class="t2" x="146" y="284" font-size="13">私有 VPC 内网 · 元数据与算力同处一朵云</text>
+  <!-- three raft nodes -->
+  <circle class="node" cx="640" cy="312" r="22"/><text class="t1" x="640" y="317" text-anchor="middle" font-size="12">M1</text>
+  <circle class="node" cx="720" cy="312" r="22"/><text class="t1" x="720" y="317" text-anchor="middle" font-size="12">M2</text>
+  <circle class="node" cx="800" cy="312" r="22"/><text class="t1" x="800" y="317" text-anchor="middle" font-size="12">M3</text>
+  <line class="lnp" x1="662" y1="312" x2="698" y2="312"/>
+  <line class="lnp" x1="742" y1="312" x2="778" y2="312"/>
+  <!-- low RTT chip -->
+  <rect x="880" y="294" width="176" height="38" rx="4" fill="rgba(255,210,122,.12)" stroke="#ffd27a" stroke-width="1.5"/>
+  <text class="gold" x="968" y="318" text-anchor="middle" font-size="15" font-weight="700">RTT ~5.8ms</text>
+
+  <!-- arrow metadata -> cache -->
+  <line class="ln" x1="600" y1="354" x2="600" y2="392" marker-end="url(#ar2)"/>
+
+  <!-- cache bar -->
+  <rect class="bar" x="120" y="394" width="960" height="56" rx="5"/>
+  <text class="t1" x="146" y="421" font-size="15" font-weight="700">NVMe Local SSD · 分布式缓存</text>
+  <text class="t2" x="146" y="440" font-size="12.5">写优化 · writeback · attr-cache TTL 3600s 解锁 peer 缓存</text>
+
+  <!-- arrow cache -> object -->
+  <line class="ln" x1="600" y1="450" x2="600" y2="488" marker-end="url(#ar2)"/>
+
+  <!-- object bar -->
+  <rect class="bar" x="120" y="490" width="960" height="56" rx="5"/>
+  <text class="t1" x="146" y="524" font-size="15" font-weight="700">Google Cloud Storage (GCS) · 本云对象存储</text>
+  <rect x="900" y="503" width="156" height="34" rx="4" fill="rgba(255,210,122,.12)" stroke="#ffd27a" stroke-width="1.5"/>
+  <text class="gold" x="978" y="525" text-anchor="middle" font-size="14" font-weight="700">本云 · 低延迟</text>
+</svg>
