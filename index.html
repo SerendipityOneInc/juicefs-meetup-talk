@@ -60,6 +60,11 @@
       <span class="mono">#JuiceFS #多云 #AIGC #统一存储</span>
       <span class="slide-number" data-current="1" data-total="19"></span>
     </div>
+    <aside class="notes">
+      <p>大家好,我是来自星辰征途的朱广彬。今天想跟大家聊一个我们做了一年多、踩了不少坑、但现在回头看非常值的事情——<strong>怎么用一套云中立的统一存储,把多云多模态 AIGC 业务的各种存储需求,全部统一起来</strong>。</p>
+      <p>先把今天的主线给大家。就一句话:<em>用一套云中立的统一存储,在不同场景下做针对性优化,最终同时拿到"低成本"和"高性能"</em>。这两个词通常是矛盾的,我们怎么同时拿到,是今天的核心。</p>
+      <p>我会按"需求、选型、架构、实践"四步走,中间有不少真实的生产数字和踩坑经验,大家有问题随时打断。</p>
+    </aside>
   </section>
 
   <!-- ============ 2. SCALE NUMBERS ============ -->
@@ -71,6 +76,11 @@
       <div class="kpi"><div class="bignum">3</div><div class="lbl">朵云<br>Oracle · DigitalOcean · GCP</div></div>
       <div class="kpi"><div class="bignum">1年+</div><div class="lbl">生产环境稳定运行</div></div>
     </div>
+    <aside class="notes">
+      <p>先一句话介绍我们:星辰征途是一家聚焦 AI 搜索和电商场景的 AIGC 公司,专注多模态模型研发。我们的业务横跨模型训练、推理、海量数据处理,还有线上的 Agent 服务。</p>
+      <p>给大家几个数字找找体感。我们的 JuiceFS 集群,目前管理着<strong>超过一亿个文件</strong>;横跨 <strong>Oracle、DigitalOcean、GCP 三朵云</strong>;在生产环境<strong>稳定跑了一年多</strong>。</p>
+      <p>这三个数字背后,其实就是今天要讲的故事——一亿文件不是堆出来的,三朵云也不是为了炫技,而是一套有意识的架构选择。我们一个一个拆开讲。</p>
+    </aside>
   </section>
 
   <!-- ============ 3. AGENDA ============ -->
@@ -84,6 +94,12 @@
       <div class="agenda-row"><span class="num">04</span><span class="t">实践:分布式缓存 / writeback / S3 Gateway</span><span class="d">~8min</span></div>
       <div class="agenda-row"><span class="num">05</span><span class="t">总结与 Q&amp;A</span><span class="d">~3min</span></div>
     </div>
+    <aside class="notes">
+      <p>过一下议程。第一部分讲需求和思路,把四类业务场景对存储的真实诉求讲清楚——这里有两个很容易想当然的点,我会专门纠正。</p>
+      <p>第二部分讲选型。有意思的是,我们离线和在线两个场景,选 JuiceFS 走的是<em>完全不同的两条路</em>,我会分开讲。</p>
+      <p>第三部分是架构的核心——同样是 JuiceFS,我们在离线和在线做了几乎相反的部署决策,这背后的逻辑是今天最想分享的。</p>
+      <p>第四部分是干货:分布式缓存、writeback、S3 Gateway 三件套在不同场景下的真实用法和踩坑。最后收尾答疑。OK,进入第一部分。</p>
+    </aside>
   </section>
 
   <!-- ============ 4. FOUR SCENARIOS ============ -->
@@ -92,6 +108,12 @@
     <h2 class="h2">四类场景,<span class="accent">四种 I/O 诉求</span></h2>
     <img class="archimg" src="four-scenarios.svg" alt="四类场景围绕 JuiceFS 统一存储层:训练/推理/数据处理/线上 Agent 各自的 I/O 诉求">
     <p class="lede tc" style="margin-top:14px">共同诉求:<span class="accent">低成本 · 云中立 · 离线高吞吐 · 线上高并发 · 对象接口</span></p>
+    <aside class="notes">
+      <p>我们的存储要同时服务四类差异很大的场景。先把它们各自的真实诉求讲清楚,这里有两个最容易想当然的点。</p>
+      <p>训练很直观,大文件顺序读、checkpoint 周期写,要的是吞吐。<strong>推理这里有个红利我要强调——训推一体</strong>:训练产出的 checkpoint 直接落在 JuiceFS 上,推理服务读的是同一份数据、还能直接命中本地缓存,省掉了"导出、搬运、重新加载"一整套流程。</p>
+      <p><strong>数据处理是第一个反直觉点</strong>:很多人以为是"海量小文件、要元数据吞吐",但真正要解决的是 IO 吞吐,而海量小文件天然不适合高吞吐——每个文件都有固定开销,越碎越慢。所以我们的思路是反过来的,这页下面会讲。</p>
+      <p>最后是线上 Agent,小文件高频读写,要在线低延迟和高并发稳定。把四类放一起,共同诉求就是底下这五个词。</p>
+    </aside>
   </section>
 
   <!-- ============ 5. CLOUD NEUTRAL = ECONOMICS ============ -->
@@ -103,6 +125,12 @@
       <div class="card"><h4>💻 在线:跟着最便宜的 CPU VM 走</h4><p class="dim">哪里 VM 便宜就部署到哪里。今天 GCP,明天可能 Azure 或任意更便宜的 region。</p></div>
     </div>
     <p class="lede mt-m tc">工程基座:<span class="accent">统一 Terraform 编排 + K8S</span> → 换云一键拉起,存储层零改动。</p>
+    <aside class="notes">
+      <p>这页是今天的认知地基,我想先把它立住。<strong>我们追求"云中立",不是出于理念洁癖,而是出于经济——它本质是一种议价能力</strong>。</p>
+      <p>对离线场景,核心逻辑很简单:<em>哪里 GPU 便宜,我就把算力部署到哪里</em>。因为存储统一在 JuiceFS 上,这就变成了"移动计算、共享存储"——算力可以在云之间漂移,数据不用搬家。</p>
+      <p>对在线 Agent,逻辑一样:哪里 CPU VM 便宜就去哪里。今天我们在 GCP,明天完全可能是 Azure。</p>
+      <p>而让这套"漂移"能快速落地的,是我们统一用 Terraform 编排、以 K8S 为底座。换一朵云,基础设施一键拉起,存储层几乎零改动。所以记住这句话——<strong>云中立,是把算力成本变成一个可议价、可迁移的变量</strong>。</p>
+    </aside>
   </section>
 
   <!-- ============ 6. DATA FOUNDATION + DX ============ -->
@@ -114,6 +142,11 @@
       <div class="card card-accent"><h4>🗂️ 整个 /data/srp 透明挂载</h4><p class="dim">代码里看不到 "JuiceFS" 字样,只用普通 POSIX 路径。<strong>开发机和集群同一套路径,所有数据当成一块本地盘。</strong></p></div>
     </div>
     <div class="quote">对工程师而言,最好的多云存储,是让他们感觉不到"多云"、也感觉不到"存储"——只有一块永远在那儿的本地盘。</div>
+    <aside class="notes">
+      <p>接着上一页那个反直觉点——数据处理。我们的思路是:用 Ray Data 并行,把海量原始小文件预处理成 parquet 大文件,单文件聚合到十万到一百万行,大幅摊薄小文件开销。这批 parquet 就成了后续所有任务复用的"<strong>数据基础层</strong>",只整体处理一次,后面 embedding、检索、推荐多次复用。</p>
+      <p>右边这点对团队效率特别关键——<strong>开发者体验</strong>。整个 /data/srp 是以 JuiceFS 透明挂载给 Ray 集群的。开发机上写的代码、处理的数据、产出的结果,全在同一份 JuiceFS 上。<em>代码里甚至看不到 JuiceFS 字样,它只用普通 POSIX 路径</em>。</p>
+      <p>对数据工程师和算法工程师来说,他们看到的永远是一个 POSIX 路径,不用关心底层是 R2 还是 GCS、不用理会任何协议差异。开发机和集群同一套路径,所有数据就当成一块本地盘。这就是底下这句话——最好的多云存储,是让人感觉不到多云、也感觉不到存储。</p>
+    </aside>
   </section>
 
   <!-- ============ 7. OFFLINE SELECTION TABLE ============ -->
@@ -130,6 +163,12 @@
         <tr><td><strong>JuiceFS</strong></td><td class="win">✅ 后端任选</td><td class="win">✅ 完整</td><td class="win">✅</td><td class="win">✅ 内建</td><td class="win">对象成本 / CSI</td></tr>
       </tbody>
     </table>
+    <aside class="notes">
+      <p>选型这件事,我们离线和在线走的路不一样,分开讲更真实。先说离线。</p>
+      <p>离线一上来就是多云、要高吞吐,所以我们在建之前就系统调研了业界几类主流方案,按我们的核心诉求逐一对比,就是这张表。</p>
+      <p>结论很清晰:<strong>自建并行文件系统</strong>性能最强,但贵、绑硬件、跨云难;<strong>云托管并行 FS</strong>省心但锁单云、贵;<strong>裸 FUSE</strong>便宜但 POSIX 和性能都不行;<strong>缓存编排层</strong>还得再叠一层底层存储,运维重。</p>
+      <p>只有 JuiceFS 同时命中我们全部诉求——尤其是"云中立加完整 POSIX 加内建分布式缓存加用对象存储做后端"这个组合,正好是别人都缺一块的地方。所以离线我们没怎么纠结,一开始就定了它。</p>
+    </aside>
   </section>
 
   <!-- ============ 8. AGENT SELECTION - FUSE PAINS ============ -->
@@ -141,6 +180,12 @@
       <div class="card card-accent"><h4>🐌 小文件高延迟</h4><p class="dim">每次 open/stat 加 50-200ms;POSIX 语义不全(rename/flock/symlink)。</p></div>
       <div class="card card-accent"><h4>🔒 被云绑定</h4><p class="dim"><strong>GCS Fuse 只能 GCP 内用</strong> + 高并发不稳定 → 直接违背云中立。</p></div>
     </div>
+    <aside class="notes">
+      <p>在线 Agent 这边,我们其实是先用了 GCS Fuse,踩了坑才迁到 JuiceFS 的。坑主要是这三类。</p>
+      <p>最致命的是左边这个——<strong>SIGKILL 会丢数据</strong>,而且是架构性的。GCS Fuse 的写是异步 write-back:你的进程 write 返回成功,数据其实还在本地缓冲,过一会儿才异步刷到 GCS。但 GCS 是对象存储、不是文件系统,没有原子写、没有真正的 fsync。一旦 Pod 被 OOM kill,那些"看起来写成功"的数据就永久丢了。在我们 Agent 场景里,直接表现为会话数据丢失。</p>
+      <p>中间是性能——Agent 工作目录有二十来个小文件、频繁追加写,GCS Fuse 每次 open、stat 都要加五十到两百毫秒,而且 rename、flock、symlink 这些 POSIX 语义还不全。</p>
+      <p>右边这个直接打在主线上——<strong>GCS Fuse 只能在 GCP 内用</strong>,连存储工具都被云锁死,加上高并发不稳定。这就是我们要换的原因。</p>
+    </aside>
   </section>
 
   <!-- ============ 9. JUICEFS WRITE PATH ============ -->
@@ -152,6 +197,12 @@
       <div class="card card-accent"><h4>✅ JuiceFS:写成功 = 已落地</h4><p class="dim">数据 chunk 先上传对象存储 → 元数据<strong>原子提交</strong> → 才返回成功。SIGKILL 不丢已确认数据。</p></div>
     </div>
     <div class="quote">FUSE 系是"把对象存储伪装成文件系统";JuiceFS 是"用对象存储做一个<span class="accent">真正的</span>文件系统"。</div>
+    <aside class="notes">
+      <p>那 JuiceFS 凭什么能解决丢数据?核心就在写路径,关键是那层独立的元数据引擎。</p>
+      <p>左边再回顾一下 GCS Fuse:write 返回成功的时候,数据还在本地异步缓冲里,刷到对象存储之前有一个丢失窗口。</p>
+      <p>右边 JuiceFS 完全不一样:它把元数据和数据分开,<strong>数据 chunk 先上传到对象存储,元数据再原子提交到独立的元数据引擎,这之后才算写成功</strong>。所以"写成功"就真的意味着"数据已经落地了",SIGKILL 不会丢已经确认的数据。再加上完整 POSIX、云中立、内建分布式缓存,还有一整套生态工具。</p>
+      <p>这页可以记一句话——FUSE 系是把对象存储伪装成文件系统,JuiceFS 是用对象存储做一个真正的文件系统。差别就在那层元数据引擎。</p>
+    </aside>
   </section>
 
   <!-- ============ 10. ARCH A: OFFLINE CROSS-CLOUD ============ -->
@@ -159,6 +210,13 @@
     <p class="kicker">// part 03 · 架构 A · 离线跨云</p>
     <h2 class="h2">离线:多云算力漂移,<span class="accent">统一元数据 + R2</span></h2>
     <img class="archimg" src="offline-arch.svg" alt="离线跨云架构:Oracle + DigitalOcean 双云,统一元数据,R2,GPU 本地 NVMe 分布式缓存">
+
+    <aside class="notes">
+      <p>进入架构,这是今天最想讲的部分。我们把 JuiceFS 用在两套差异很大的场景里,而且做了几乎相反的决策。先看离线。</p>
+      <p>离线要的是算力自由漂移。所以从上往下看:算力层是 Oracle 上的 H100 和 DigitalOcean 上的 H200,底层统一用 Slinky Slurm on K8S 的训推一体方案,vLLM 推理、Slurm 训练、KubeRay 计算跑同一套 K8S。</p>
+      <p>中间这条是关键——<strong>一套统一的元数据服务,跨 OCI 和 DO 共享</strong>,所以两朵云看到的是同一个文件系统、同一份数据,这就是"移动计算、共享存储"的落地。</p>
+      <p>缓存这层,每个 GPU 节点用本地 NVMe 做分布式缓存,生产是六台 H100、每台 56TB,组成三百多 TB 的缓存池。最底层对象存储用 Cloudflare R2,<strong>因为离线要跨云读写,R2 免 egress,跨云流量不额外掏钱</strong>,天然契合云中立。</p>
+    </aside>
   </section>
 
   <!-- ============ 11. ARCH B: ONLINE AGENT ============ -->
@@ -166,6 +224,13 @@
     <p class="kicker">// part 03 · 架构 B · 在线 Agent</p>
     <h2 class="h2">在线:单云贴身,<span class="accent">独立元数据 + GCS</span></h2>
     <img class="archimg" src="online-arch.svg" alt="在线 Agent 架构:GCP 单云,独立 3 节点 Raft 元数据,GCS,JuiceFS CSI 每 bot subPath">
+
+    <aside class="notes">
+      <p>再看在线 Agent,诉求完全不同——在线、小文件、写密集、对延迟极度敏感。这里我们做了和离线<strong>相反</strong>的选择。</p>
+      <p>算力是单朵云 GCP,K8S 里跑很多 bot Pod,通过 JuiceFS CSI 挂同一个 RWX 的 PVC,每个 bot 用 subPath 隔离自己的目录,token 按环境限制子目录,做到文件系统级的硬隔离。</p>
+      <p>元数据这层是关键差异:<strong>不再跨云联邦,而是在 GCP 内部起一个独立的三节点 Raft 元数据集群,放在私有 VPC 内网</strong>。对象存储也不用 R2 了,改用本云的 GCS。</p>
+      <p>大家可能会问,为什么离线和在线刚好相反?这正是下一页要讲的——这背后的取舍逻辑,才是整个架构最值钱的地方。</p>
+    </aside>
   </section>
 
   <!-- ============ 12. DECISION CONTRAST + QUOTES ============ -->
@@ -182,6 +247,12 @@
       </tbody>
     </table>
     <div class="quote">① 云中立 ≠ 一个后端打天下,而是<span class="accent">有能力按场景选最优后端</span>,上层零改动。<br>② <span class="accent">元数据局部性,是性能的地板。</span></div>
+    <aside class="notes">
+      <p>为什么相反?因为目标不同,最优后端就不同。</p>
+      <p>离线要跨云,R2 免 egress 就是省钱利器,统一元数据让数据真正共享。在线要低延迟——我们最早在线场景其实也是"OCI 元数据加 R2",结果元数据 RTT 十二点七毫秒、跨公网,小文件写极慢,R2 还偶发三十秒的 PUT 超时,甚至把 bot 打挂。把元数据和对象存储都搬进 GCP 同一朵云的内网之后,延迟立刻降下来。</p>
+      <p>这里有两条金句,是我们交了学费才悟到的。<strong>第一,云中立不等于一个后端打天下,而是你有能力按场景选最优后端,而上层应用和工具链完全不用改。</strong></p>
+      <p><strong>第二,元数据局部性是性能的地板。</strong>你缓存盘再快,只要元数据要跨公网走一跳,小文件性能就被那一跳的 RTT 焊死了。这句话下一部分会被反复印证。</p>
+    </aside>
   </section>
 
   <!-- ============ 13. DISTRIBUTED CACHE: OFFLINE VS ONLINE ============ -->
@@ -198,6 +269,12 @@
       </tbody>
     </table>
     <p class="lede mt-m">模型是 <strong>provider/consumer</strong>:GPU 节点组 cache-group 共享缓存块,客户端 <span class="mono">--no-sharing</span> 只读。<br>反直觉坑:<span class="accent">attr-cache TTL 太短会"杀死"分布式缓存</span> → 1s 提到 3600s,peer 间稳定 7-15 MB/s。</p>
+    <aside class="notes">
+      <p>进入干货。分布式缓存是 JuiceFS 的性能担当,模型是 provider/consumer:GPU 节点做 provider,本地 NVMe 加同一个 cache-group,彼此共享缓存块,一个节点拉过的数据邻居直接取;开发机做 consumer,加 no-sharing,只读不贡献盘。</p>
+      <p>但关键经验是:<strong>同一个缓存,我们两个场景的策略完全不同</strong>。我特意去翻了两边真实的 PV 配置,差异很说明问题。</p>
+      <p>离线是"读优化":数据是相对静态的大文件数据集,所以全盘缓存加 peer 共享,只首读回源一次、之后全命中,纯流式只读甚至用 cache-size=0 省盘。<strong>离线根本没碰 attr-cache TTL</strong>,因为数据静态、元数据压力小。</p>
+      <p>在线是"写优化加元数据调优",这里有个反直觉的坑——默认 attr-cache TTL 只有一秒,我们一开始发现分布式缓存几乎不工作,peer 间流量接近零。排查发现是 TTL 太短、元数据不停失效,把 peer cache 读一直打断。提到三千六百秒后,缓存立刻解锁,peer 间稳定跑到七到十五 MB 每秒。所以缓存不是开了就完事,得按场景调。</p>
+    </aside>
   </section>
 
   <!-- ============ 13b. OFFLINE PERF ============ -->
@@ -214,6 +291,12 @@
       </tbody>
     </table>
     <p class="lede tc" style="margin-top:16px">写吞吐 <span class="accent">~250 MB/s → ~1.1 GB/s</span> · 缓存命中打满本地 NVMe · 冷读回源是首读瓶颈,缓存兜住</p>
+    <aside class="notes">
+      <p>给离线场景补几个实测数字,正好呼应前面分布式缓存那页。</p>
+      <p>先看<strong>写</strong>:没调优之前大概两百三四十 MB 每秒;启用分布式缓存、把 R2 的上传下载并发调大之后,顺序写冲到七百多 MB 每秒,大批量能到一点一个 GB 每秒,差不多<strong>四倍</strong>。</p>
+      <p><strong>读</strong>这边更明显:命中分布式缓存的时候能到<strong>七到八个 GB 每秒</strong>,基本就是本地 NVMe 的速度——这就是那个三百 TB 缓存池的价值。而第一次冷读、要回源 R2 的时候大概四百多 MB 每秒,正好印证我们反复说的那句——R2 下载是首读瓶颈,缓存把它兜住。</p>
+      <p>所以离线和在线的故事是对称的:在线靠"把元数据搬进内网"提速,离线靠"分布式缓存池"提速,底层都是同一个 JuiceFS。</p>
+    </aside>
   </section>
 
   <!-- ============ 14. WRITEBACK ============ -->
@@ -225,6 +308,11 @@
       <div class="card card-accent"><h4>🔵 离线:不开</h4><p class="dim">大文件顺序写 IO 本就够好;checkpoint/数据基础层<strong>难重算,crash 丢数据风险不可接受</strong>。</p></div>
     </div>
     <p class="lede mt-m">两个坑:① writeback <strong>不解决</strong>小文件 close() 延迟(那是元数据 RTT bound);② cache-dir <span class="accent">必须持久化盘</span>,tmpfs 会静默退回同步写。</p>
+    <aside class="notes">
+      <p>第二件套,writeback。先点破本质:<strong>writeback 是用数据安全换写吞吐</strong>。回想刚才——默认 JuiceFS 是数据先落对象存储、元数据再原子提交,所以不丢数据;而一旦开 writeback,写就先停在本地缓存盘、还没刷到对象存储,这个窗口里 crash 就会丢。等于把"不丢数据"那个优势主动让出去了。</p>
+      <p>所以开不开完全看场景能不能承受这个风险。<strong>Agent 开</strong>:它大文件产物多、又延迟敏感,愿意用可接受的风险换大文件吞吐 plus 85%。<strong>离线不开</strong>:一是大文件顺序写本来就够快,二是更关键——checkpoint、数据基础层这些数据宝贵且难重算,crash 丢数据在离线不可接受,宁可不要那点提速。</p>
+      <p>Agent 开了也踩两个坑:第一,writeback 不解决小文件 close 延迟,小文件慢的根因是元数据 RTT、不是带宽,这又回到那条金句;第二,cache-dir 必须是持久化盘,我们试过用 ramdisk,JuiceFS 检测到不持久会静默退回同步写,你以为开了其实没生效,排查很久。</p>
+    </aside>
   </section>
 
   <!-- ============ 15. S3 GATEWAY ============ -->
@@ -240,6 +328,12 @@ artifacts.xxx.ai/{botId}/...
    <span class="flag">→</span> 元数据查询 + 对象存储取 chunk
     </div>
     <p class="lede mt-m">为什么不用 POSIX 挂载?消费方是 <strong>CDN / Worker / Web</strong>,天然说 S3。<br><span class="accent">内部训练走 POSIX 挂载,对外分发走 S3 接口——同一份数据。</span></p>
+    <aside class="notes">
+      <p>第三件套,S3 Gateway。它把 JuiceFS 暴露成一个 S3 兼容接口。我们用它对外提供 Agent 产物的访问。</p>
+      <p>看这个数据流:外部请求先到 Cloudflare CDN,再到 Cloudflare Worker 做路径校验,然后打到 JuiceFS S3 Gateway,Gateway 查元数据、取对象存储的 chunk 返回。安全上做了三层:JuiceFS token 子目录隔离、S3 Gateway 的 single-bucket 加 IAM 路径前缀限制、再加 Worker 的代码级过滤。另外用了 keep-etag,让 Gateway 算 MD5,配合 CDN 缓存校验。</p>
+      <p>关键问题是——<strong>为什么这里用 S3 接口,而不是直接 POSIX 挂载?</strong>因为消费方是 CDN、Worker、Web 这类天然说 S3 和 HTTP 的服务,它们不该也不需要去挂一个 POSIX 文件系统。</p>
+      <p>所以同一份数据,内部训练用 POSIX 挂载,对外分发用 S3 接口——这正是 JuiceFS"一份数据、多种接口"的价值。</p>
+    </aside>
   </section>
 
   <!-- ============ 16. PERF EVOLUTION 42x ============ -->
@@ -252,6 +346,13 @@ artifacts.xxx.ai/{botId}/...
       <div class="tl final"><div class="ph">Phase 3 · GCP 内网元数据</div><div class="big">~1000<span style="font-size:14px"> files/s</span></div><div class="sub">RTT → 5.8ms;同区 GCS;NVMe 缓存。<strong>小文件写 ~42×</strong>。</div></div>
     </div>
     <p class="lede mt-m tc">最大功臣不是缓存盘,是<span class="accent">元数据局部性</span>——那条金句的最佳注脚。</p>
+    <aside class="notes">
+      <p>把前面这些串起来,就是 Agent 场景的性能演进,也是今天最有冲击力的一组数字。</p>
+      <p>起点:OCI 元数据加 R2,跨公网。小文件写大概每秒二十四个,元数据 RTT 十二点七毫秒,R2 还偶发三十秒超时打挂 bot。</p>
+      <p>Phase 1 到 2:我们开 writeback、调 TTL 解锁分布式缓存,大文件吞吐上去了 85%,分布式缓存也起来了,<em>但小文件还是慢</em>,因为元数据还在跨公网。</p>
+      <p>Phase 3 是质变:把元数据搬进 GCP 内网的 Raft 集群,对象存储换成同区 GCS,缓存挪到 NVMe。小文件写冲到每秒一千个,大约 <strong>42 倍提升</strong>;元数据 RTT 降到五点八毫秒;三十秒超时彻底消失。</p>
+      <p>所以这页的结论一句话——<strong>42 倍里最大的功臣不是缓存盘,是把元数据搬进了同一朵云的内网</strong>。这就是"元数据局部性是性能地板"最好的注脚。</p>
+    </aside>
   </section>
 
   <!-- ============ 17. BENEFITS + CLOSING ============ -->
@@ -265,6 +366,11 @@ artifacts.xxx.ai/{botId}/...
     </div>
     <p class="lede tc" style="margin-top:16px">在线大文件吞吐 <span class="accent">+85%</span> · 元数据 RTT <span class="accent">12.7→5.8ms</span> · 离线缓存命中读 <span class="accent">7-8 GB/s</span> · R2 偶发 30s 超时<span class="accent">归零</span></p>
     <div class="quote">让算力成本变成一个<span class="accent">可议价、可迁移</span>的变量——而统一存储,是这件事的地基。</div>
+    <aside class="notes">
+      <p>收尾,把一年多的收益按场景说清楚。<strong>在线 Agent</strong> 这边:小文件写入约 42 倍提升、大文件吞吐 plus 85%、元数据 RTT 从十二点七毫秒降到五点八毫秒。<strong>离线</strong> 这边:启用分布式缓存、调大 R2 并发之后,顺序写吞吐提升约<strong>四倍</strong>,命中缓存的读能到<strong>七到八个 GB 每秒</strong>;那个三百多 TB 的缓存池不是收益本身,而是把跨云回源 R2 的延迟兜住的手段。而贯穿两个场景、最让我们踏实的其实是<strong>稳定性</strong>——一亿多文件、横跨三朵云、稳定跑了一年多,而且以前 R2 那种偶发三十秒超时打挂服务的情况彻底归零。</p>
+      <p>回到开头那句主线——云中立的统一存储,加全场景分治优化,等于低成本加高性能。今天讲的两套场景、相反的后端决策,本质都在做同一件事:<strong>让算力成本变成一个可议价、可迁移的变量,而统一存储,就是这件事的地基</strong>。</p>
+      <p>往前看,我们的离线算力会继续跟着最便宜的 GPU 漂移,在线服务也可能从 GCP 扩到 Azure 或任意更便宜的 region,而存储层几乎零改动。这就是我们选择 JuiceFS 最大的理由。</p>
+    </aside>
   </section>
 
   <!-- ============ 18. THANKS / Q&A ============ -->
@@ -288,6 +394,11 @@ artifacts.xxx.ai/{botId}/...
       <span class="mono">星辰征途 · JuiceFS Meetup</span>
       <span class="slide-number" data-current="19" data-total="19"></span>
     </div>
+    <aside class="notes">
+      <p>我今天就讲到这里。最后留几个大家可能会问的点,先放在脑子里:统一元数据跨云怎么打通、元数据引擎是自建还是托管、一亿文件元数据扛不扛得住、R2 和 GCS 成本到底怎么算、为什么不用云厂商的 Lustre/FSx。这些我都可以展开聊。</p>
+      <p>核心就一句话——如果今天只带走一点,希望是这个:<strong>选存储不是选一个"最快的后端",而是搭一个"能按场景换后端、还让工程师无感"的统一层</strong>。</p>
+      <p>最后打个小广告:今天讲的这套在线 Agent 架构,其实就是我们产品 <strong>ZooClaw</strong> 的底座——ZooClaw 是一支主动帮你处理日常任务的 AI Agent 团队,不用配置、不用部署、不用 API key,网页和 iOS App 都能直接上手。感兴趣的同学,欢迎去 <strong>zooclaw.ai</strong> 体验。谢谢大家,现在开始提问。</p>
+    </aside>
   </section>
 
 </div>
