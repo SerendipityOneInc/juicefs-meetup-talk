@@ -19,6 +19,12 @@
   .tpl-presenter-mode-reveal .arch .cols{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .tpl-presenter-mode-reveal .arch .flow{ text-align:center; color:var(--accent-2); font-size:18px; line-height:1; margin:-4px 0; }
   .tpl-presenter-mode-reveal .archimg{ width:100%; max-width:1060px; display:block; margin:14px auto 0; }
+  .tpl-presenter-mode-reveal .product-strip{ display:flex; gap:16px; margin-top:18px; }
+  .tpl-presenter-mode-reveal .prod-chip{ flex:1; border:1.5px dashed var(--accent-3); border-radius:6px; padding:14px 22px; background:rgba(255,210,122,.08); color:var(--text-1); font-size:18px; display:flex; align-items:center; gap:10px; }
+  .tpl-presenter-mode-reveal .prod-chip b{ color:var(--accent-3); font-size:20px; }
+  .tpl-presenter-mode-reveal .prod-chip .prod-emoji{ font-size:24px; }
+  .tpl-presenter-mode-reveal .prod-chip .prod-logo{ width:32px; height:32px; border-radius:6px; display:block; flex-shrink:0; }
+  .tpl-presenter-mode-reveal .prod-chip .prod-tag{ background:rgba(255,210,122,.2); color:var(--accent-3); padding:3px 10px; border-radius:3px; font-size:13px; font-weight:700; margin-left:auto; letter-spacing:.05em; }
   .tpl-presenter-mode-reveal .bignum{ font-size:clamp(38px,5.5vw,68px); font-weight:800; color:var(--accent-3); line-height:1; }
   .tpl-presenter-mode-reveal .kpi-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:28px; }
   .tpl-presenter-mode-reveal .kpi{ border:1px dashed var(--border-strong); border-radius:4px; padding:24px 16px; text-align:center; }
@@ -39,6 +45,8 @@
   .tpl-presenter-mode-reveal .thanks-left{ flex:1.05; }
   .tpl-presenter-mode-reveal .thanks-right{ flex:1; display:flex; flex-direction:column; gap:16px; }
   .tpl-presenter-mode-reveal .zooclaw{ border:1.5px dashed var(--accent-3); border-radius:6px; padding:20px 24px; background:rgba(255,210,122,.06); }
+  .tpl-presenter-mode-reveal .zooclaw .zc-head{ display:flex; align-items:center; gap:10px; }
+  .tpl-presenter-mode-reveal .zooclaw .zc-head img{ width:26px; height:26px; border-radius:5px; display:block; }
   .tpl-presenter-mode-reveal .zooclaw .zc-head{ font-size:24px; font-weight:800; color:var(--accent-3); }
   .tpl-presenter-mode-reveal .zooclaw .zc-sub{ font-size:15px; color:var(--text-2); margin-top:8px; line-height:1.55; }
   .tpl-presenter-mode-reveal .zooclaw .zc-cta{ font-size:17px; color:var(--text-1); margin-top:14px; font-weight:600; }
@@ -71,7 +79,10 @@
   <section class="slide" data-title="规模">
     <p class="kicker">// 我们是谁 · 生产规模</p>
     <h2 class="h2">星辰征途:AI 搜索 + 电商场景的 <span class="accent">多模态 AIGC</span> 公司</h2>
-    <p class="lede" style="margin-top:-6px;font-size:17px">这套存储支撑我们两个 AI Agent 方向的产品 · <span class="accent">Gensmo</span>(时尚试穿 / 离线训练 · 推理 · 数据处理)+ <span class="accent">ZooClaw</span>(通用 / 在线 Agent 团队)</p>
+    <div class="product-strip">
+      <div class="prod-chip"><img class="prod-logo" src="gensmo-logo.svg" alt="Gensmo"><span><b>Gensmo</b> · AI Stylist &amp; Try-On</span></div>
+      <div class="prod-chip"><img class="prod-logo" src="zooclaw-logo.png" alt="ZooClaw"><span><b>ZooClaw</b> · Your team of AI agents · One brain · Full crew</span></div>
+    </div>
     <div class="kpi-grid">
       <div class="kpi"><div class="bignum">1亿+</div><div class="lbl">JuiceFS 管理的文件数</div></div>
       <div class="kpi"><div class="bignum">3</div><div class="lbl">朵云<br>Oracle · DigitalOcean · GCP</div></div>
@@ -386,7 +397,7 @@ artifacts.xxx.ai/{botId}/...
       <div class="thanks-right">
         <div class="zooclaw" style="display:flex;gap:18px;align-items:center">
           <div style="flex:1;min-width:0">
-            <div class="zc-head">👗 Gensmo</div>
+            <div class="zc-head"><img src="gensmo-logo.svg" alt="">Gensmo</div>
             <div class="zc-sub" style="font-size:15px;color:var(--accent-3);font-weight:700;margin-top:4px">First Fashion AI Agent · 时尚试穿与造型</div>
             <div class="zc-sub">个性化造型 · 虚拟试穿 · 商品搜索</div>
             <div class="zc-cta">→ <span class="accent">gensmo.com</span> · iOS App</div>
@@ -398,7 +409,7 @@ artifacts.xxx.ai/{botId}/...
         </div>
         <div class="zooclaw" style="display:flex;gap:18px;align-items:center">
           <div style="flex:1;min-width:0">
-            <div class="zc-head">🐾 ZooClaw</div>
+            <div class="zc-head"><img src="zooclaw-logo.png" alt="">ZooClaw</div>
             <div class="zc-sub" style="font-size:14px;color:var(--accent-3);font-weight:700;margin-top:4px;font-family:var(--font-mono)">Your team of AI agents · One brain. Full crew.</div>
             <div class="zc-sub">主动式 AI Agent 团队 · 内置 <span class="accent">Stylist</span> 等多个 agent(Gensmo 能力即内置)</div>
             <div class="zc-cta">→ <span class="accent">zooclaw.ai</span> · App Store 搜 <span class="mono" style="font-size:14px">zooclaw</span></div>
