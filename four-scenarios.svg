@@ -23,24 +23,28 @@
   <!-- TL 训练 -->
   <rect class="card" x="60" y="40" width="440" height="100" rx="5"/>
   <text class="t1"    x="84" y="74" font-size="17" font-weight="700">① 模型训练</text>
+  <text class="gold"  x="488" y="74" font-size="12" font-weight="700" text-anchor="end">Gensmo</text>
   <text class="t2"    x="84" y="98" font-size="13">大文件顺序读 + checkpoint 周期写</text>
   <text class="trait" x="84" y="120" font-size="13">→ 高吞吐 · 高性能离线 I/O</text>
 
   <!-- TR 推理 -->
   <rect class="card" x="700" y="40" width="440" height="100" rx="5"/>
   <text class="t1"    x="724" y="74" font-size="17" font-weight="700">② 推理</text>
+  <text class="gold"  x="1128" y="74" font-size="12" font-weight="700" text-anchor="end">Gensmo</text>
   <text class="t2"    x="724" y="98" font-size="13">高并发读权重/数据 · 训推一体复用 checkpoint</text>
   <text class="trait" x="724" y="120" font-size="13">→ 低延迟 · 命中本地缓存</text>
 
   <!-- BL 数据处理 -->
   <rect class="card" x="60" y="330" width="440" height="100" rx="5"/>
   <text class="t1"    x="84" y="364" font-size="17" font-weight="700">③ 数据处理</text>
+  <text class="gold"  x="488" y="364" font-size="12" font-weight="700" text-anchor="end">Gensmo</text>
   <text class="t2"    x="84" y="388" font-size="13">Ray Data 并行 → parquet "数据基础层"</text>
   <text class="trait" x="84" y="410" font-size="13">→ IO 吞吐(小文件不适合,先聚合)</text>
 
   <!-- BR 线上 Agent -->
   <rect class="card" x="700" y="330" width="440" height="100" rx="5"/>
   <text class="t1"    x="724" y="364" font-size="17" font-weight="700">④ 线上 Agent</text>
+  <text class="gold"  x="1128" y="364" font-size="12" font-weight="700" text-anchor="end">ZooClaw</text>
   <text class="t2"    x="724" y="388" font-size="13">每 bot 工作空间 · 小文件高频读写</text>
   <text class="trait" x="724" y="410" font-size="13">→ 在线低延迟 · 高并发稳定</text>
 </svg>

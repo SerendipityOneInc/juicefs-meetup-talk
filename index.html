@@ -37,8 +37,8 @@
   .tpl-presenter-mode-reveal .tl .sub{ font-size:13px; color:var(--text-2); line-height:1.5; }
   .tpl-presenter-mode-reveal .thanks-row{ display:flex; align-items:center; gap:60px; min-height:74%; }
   .tpl-presenter-mode-reveal .thanks-left{ flex:1.05; }
-  .tpl-presenter-mode-reveal .thanks-right{ flex:1; }
-  .tpl-presenter-mode-reveal .zooclaw{ border:1.5px dashed var(--accent-3); border-radius:6px; padding:28px 30px; background:rgba(255,210,122,.06); }
+  .tpl-presenter-mode-reveal .thanks-right{ flex:1; display:flex; flex-direction:column; gap:16px; }
+  .tpl-presenter-mode-reveal .zooclaw{ border:1.5px dashed var(--accent-3); border-radius:6px; padding:20px 24px; background:rgba(255,210,122,.06); }
   .tpl-presenter-mode-reveal .zooclaw .zc-head{ font-size:24px; font-weight:800; color:var(--accent-3); }
   .tpl-presenter-mode-reveal .zooclaw .zc-sub{ font-size:15px; color:var(--text-2); margin-top:8px; line-height:1.55; }
   .tpl-presenter-mode-reveal .zooclaw .zc-cta{ font-size:17px; color:var(--text-1); margin-top:14px; font-weight:600; }
@@ -71,6 +71,7 @@
   <section class="slide" data-title="规模">
     <p class="kicker">// 我们是谁 · 生产规模</p>
     <h2 class="h2">星辰征途:AI 搜索 + 电商场景的 <span class="accent">多模态 AIGC</span> 公司</h2>
+    <p class="lede" style="margin-top:-6px;font-size:17px">这套存储支撑我们两个 AI Agent 方向的产品 · <span class="accent">Gensmo</span>(时尚试穿 / 离线训练 · 推理 · 数据处理)+ <span class="accent">ZooClaw</span>(通用 / 在线 Agent 团队)</p>
     <div class="kpi-grid">
       <div class="kpi"><div class="bignum">1亿+</div><div class="lbl">JuiceFS 管理的文件数</div></div>
       <div class="kpi"><div class="bignum">3</div><div class="lbl">朵云<br>Oracle · DigitalOcean · GCP</div></div>
@@ -79,7 +80,8 @@
     <aside class="notes">
       <p>先一句话介绍我们:星辰征途是一家聚焦 AI 搜索和电商场景的 AIGC 公司,专注多模态模型研发。我们的业务横跨模型训练、推理、海量数据处理,还有线上的 Agent 服务。</p>
       <p>给大家几个数字找找体感。我们的 JuiceFS 集群,目前管理着<strong>超过一亿个文件</strong>;横跨 <strong>Oracle、DigitalOcean、GCP 三朵云</strong>;在生产环境<strong>稳定跑了一年多</strong>。</p>
-      <p>这三个数字背后,其实就是今天要讲的故事——一亿文件不是堆出来的,三朵云也不是为了炫技,而是一套有意识的架构选择。我们一个一个拆开讲。</p>
+      <p>这三个数字背后,其实就是今天要讲的故事——一亿文件不是堆出来的,三朵云也不是为了炫技,而是一套有意识的架构选择。</p>
+      <p>顺便也把"<strong>支撑了什么业务</strong>"说一下,后面所有的场景就有了具体依托:这套存储主要服务两个 AI Agent 方向的产品——<strong>Gensmo</strong>,我们做的时尚 AI Agent,虚拟试穿和造型推荐,JuiceFS 在它身上主要承担<em>离线</em>的模型训练、推理、以及商品/穿搭数据处理;<strong>ZooClaw</strong>,我们做的通用主动式 AI Agent 团队,JuiceFS 在它身上主要承担<em>在线</em> Agent 工作空间。所以一会儿讲"离线"那套你就想 Gensmo,讲"在线"那套你就想 ZooClaw,这其实就是今天双线叙事最真实的两个产品。</p>
     </aside>
   </section>
 
@@ -382,11 +384,29 @@ artifacts.xxx.ai/{botId}/...
         <p class="lede mt-m">云中立 · 全场景分治优化 · 低成本 × 高性能</p>
       </div>
       <div class="thanks-right">
-        <div class="zooclaw">
-          <div class="zc-head">🐾 ZooClaw</div>
-          <div class="zc-sub" style="font-size:17px;color:var(--accent-3);font-weight:700;margin-top:4px">你的主动式 AI Agent 团队</div>
-          <div class="zc-sub">不是又一个 AI 助手,而是一支随叫随到的 AI 专家团队。<br>免配置 · 免部署 · 无需 API key,网页 + iOS App 开箱即用。</div>
-          <div class="zc-cta">立即体验 → <span class="accent">zooclaw.ai</span></div>
+        <div class="zooclaw" style="display:flex;gap:18px;align-items:center">
+          <div style="flex:1;min-width:0">
+            <div class="zc-head">👗 Gensmo</div>
+            <div class="zc-sub" style="font-size:15px;color:var(--accent-3);font-weight:700;margin-top:4px">First Fashion AI Agent · 时尚试穿与造型</div>
+            <div class="zc-sub">个性化造型 · 虚拟试穿 · 商品搜索</div>
+            <div class="zc-cta">→ <span class="accent">gensmo.com</span> · iOS App</div>
+          </div>
+          <div style="flex-shrink:0;text-align:center">
+            <img src="gensmo-qr.jpg" alt="Gensmo 扫码试穿" style="width:110px;height:110px;background:#fff;border-radius:6px;padding:4px;display:block">
+            <div style="font-size:11px;color:var(--text-3);margin-top:6px;letter-spacing:.05em">扫码即试穿(无需下载)</div>
+          </div>
+        </div>
+        <div class="zooclaw" style="display:flex;gap:18px;align-items:center">
+          <div style="flex:1;min-width:0">
+            <div class="zc-head">🐾 ZooClaw</div>
+            <div class="zc-sub" style="font-size:14px;color:var(--accent-3);font-weight:700;margin-top:4px;font-family:var(--font-mono)">Your team of AI agents · One brain. Full crew.</div>
+            <div class="zc-sub">主动式 AI Agent 团队 · 内置 <span class="accent">Stylist</span> 等多个 agent(Gensmo 能力即内置)</div>
+            <div class="zc-cta">→ <span class="accent">zooclaw.ai</span> · App Store 搜 <span class="mono" style="font-size:14px">zooclaw</span></div>
+          </div>
+          <div style="flex-shrink:0;text-align:center">
+            <img src="zooclaw-stylist.PNG" alt="Stylist agent · 嘉宾造型" style="width:88px;height:auto;border-radius:8px;display:block;box-shadow:0 2px 8px rgba(0,0,0,.35)">
+            <div style="font-size:11px;color:var(--text-3);margin-top:6px;line-height:1.3">嘉宾今日造型<br>by <span class="accent">Stylist</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -397,7 +417,8 @@ artifacts.xxx.ai/{botId}/...
     <aside class="notes">
       <p>我今天就讲到这里。最后留几个大家可能会问的点,先放在脑子里:统一元数据跨云怎么打通、元数据引擎是自建还是托管、一亿文件元数据扛不扛得住、R2 和 GCS 成本到底怎么算、为什么不用云厂商的 Lustre/FSx。这些我都可以展开聊。</p>
       <p>核心就一句话——如果今天只带走一点,希望是这个:<strong>选存储不是选一个"最快的后端",而是搭一个"能按场景换后端、还让工程师无感"的统一层</strong>。</p>
-      <p>最后打个小广告:今天讲的这套在线 Agent 架构,其实就是我们产品 <strong>ZooClaw</strong> 的底座——ZooClaw 是一支主动帮你处理日常任务的 AI Agent 团队,不用配置、不用部署、不用 API key,网页和 iOS App 都能直接上手。感兴趣的同学,欢迎去 <strong>zooclaw.ai</strong> 体验。谢谢大家,现在开始提问。</p>
+      <p>最后打个小广告。今天讲的这套架构,其实就是我们两个产品的底座——<strong>离线</strong>那套支撑了 <strong>Gensmo</strong>,我们的时尚 AI Agent,做虚拟试穿和个性化造型;右上角这个二维码大家可以直接掏出手机扫,<em>不用下载 App 就能立刻试穿</em>,完整功能去 <strong>gensmo.com</strong> 或 App Store 下 Gensmo。<strong>在线</strong>那套支撑了 <strong>ZooClaw</strong>,主动式 AI Agent 团队——一句话讲就是 "Your team of AI agents, one brain, full crew",免配置、免部署、不用 API key,网页 <strong>zooclaw.ai</strong> 或 App Store 搜 zooclaw 都能直接上手。</p>
+      <p>而且 Gensmo 的能力在 ZooClaw 里以一个叫 <strong>Stylist</strong> 的 agent 内置存在。<em>(指着自己)</em>顺便埋一个彩蛋——<strong>我今天身上穿的这一套,就是 ZooClaw 里的 Stylist agent 给我搭配的</strong>,Stylist 给的方案标题写得很直白:"周六 JuiceFS Meetup 清爽嘉宾造型"。所以今天分享的不只是底层存储,也是这套存储跑出来的真实产品在自己证明自己。谢谢大家,现在开始提问。</p>
     </aside>
   </section>
 
