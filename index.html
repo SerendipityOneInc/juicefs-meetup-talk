@@ -47,6 +47,12 @@
   .tpl-presenter-mode-reveal .zooclaw{ border:1.5px dashed var(--accent-3); border-radius:6px; padding:20px 24px; background:rgba(255,210,122,.06); }
   .tpl-presenter-mode-reveal .zooclaw .zc-head{ display:flex; align-items:center; gap:10px; }
   .tpl-presenter-mode-reveal .zooclaw .zc-head img{ width:26px; height:26px; border-radius:5px; display:block; }
+  .zoomable{ cursor:zoom-in; transition:transform .15s; }
+  .zoomable:hover{ transform:scale(1.04); }
+  .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:none; align-items:center; justify-content:center; z-index:9999; cursor:zoom-out; backdrop-filter:blur(4px); }
+  .lightbox.open{ display:flex; }
+  .lightbox img{ max-width:92%; max-height:92%; box-shadow:0 12px 50px rgba(0,0,0,.7); border-radius:10px; background:#fff; }
+  .lightbox .lb-hint{ position:fixed; bottom:18px; left:50%; transform:translateX(-50%); color:#fff8; font-size:13px; letter-spacing:.05em; font-family:var(--font-mono,monospace); }
   .tpl-presenter-mode-reveal .zooclaw .zc-head{ font-size:24px; font-weight:800; color:var(--accent-3); }
   .tpl-presenter-mode-reveal .zooclaw .zc-sub{ font-size:15px; color:var(--text-2); margin-top:8px; line-height:1.55; }
   .tpl-presenter-mode-reveal .zooclaw .zc-cta{ font-size:17px; color:var(--text-1); margin-top:14px; font-weight:600; }
@@ -61,7 +67,7 @@
     <h1 class="h1 anim-fade-up" data-anim="fade-up">面向多云多模态 AIGC 业务的<br><span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">统一存储实践</span></h1>
     <p class="lede mt-m">一套云中立的统一存储 · 全场景分治优化 · 低成本 × 高性能</p>
     <div class="speaker">
-      <div class="av"></div>
+      <img class="av zoomable" src="zhuguangbin.jpg" alt="朱广彬" style="object-fit:cover">
       <div><b>朱广彬</b><span>星辰征途 · 基础设施团队</span></div>
     </div>
     <div class="deck-footer">
@@ -403,7 +409,7 @@ artifacts.xxx.ai/{botId}/...
             <div class="zc-cta">→ <span class="accent">gensmo.com</span> · App Store 搜 <span class="mono" style="font-size:14px">gensmo</span></div>
           </div>
           <div style="flex-shrink:0;text-align:center">
-            <img src="gensmo-qr.jpg" alt="Gensmo 扫码试穿" style="width:110px;height:110px;background:#fff;border-radius:6px;padding:4px;display:block">
+            <img class="zoomable" src="gensmo-qr.jpg" alt="Gensmo 扫码试穿" style="width:110px;height:110px;background:#fff;border-radius:6px;padding:4px;display:block">
             <div style="font-size:11px;color:var(--text-3);margin-top:6px;letter-spacing:.05em">扫码即试穿(无需下载)</div>
           </div>
         </div>
@@ -415,7 +421,7 @@ artifacts.xxx.ai/{botId}/...
             <div class="zc-cta">→ <span class="accent">zooclaw.ai</span> · App Store 搜 <span class="mono" style="font-size:14px">zooclaw</span></div>
           </div>
           <div style="flex-shrink:0;text-align:center">
-            <img src="zooclaw-stylist.PNG" alt="Stylist agent · 嘉宾造型" style="width:88px;height:auto;border-radius:8px;display:block;box-shadow:0 2px 8px rgba(0,0,0,.35)">
+            <img class="zoomable" src="zooclaw-stylist.PNG" alt="Stylist agent · 嘉宾造型" style="width:88px;height:auto;border-radius:8px;display:block;box-shadow:0 2px 8px rgba(0,0,0,.35)">
             <div style="font-size:11px;color:var(--text-3);margin-top:6px;line-height:1.3">嘉宾今日造型<br>by <span class="accent">Stylist</span></div>
           </div>
         </div>
@@ -439,6 +445,19 @@ artifacts.xxx.ai/{botId}/...
   S 演讲者视图 · T 切换主题 · ← → 翻页 · F 全屏 · O 总览 · R 重置计时
 </div>
 
+<div class="lightbox" id="lightbox"><img alt=""><div class="lb-hint">点击任意处 / 按 Esc 关闭</div></div>
 <script src="assets/runtime.js"></script>
+<script>
+(function(){
+  var lb=document.getElementById('lightbox');if(!lb)return;
+  var img=lb.querySelector('img');
+  document.addEventListener('click',function(e){
+    var t=e.target.closest('.zoomable');
+    if(t){ img.src=t.src; img.alt=t.alt||''; lb.classList.add('open'); e.stopPropagation(); return;}
+    if(lb.classList.contains('open')){ lb.classList.remove('open'); }
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') lb.classList.remove('open'); });
+})();
+</script>
 </body>
 </html>
