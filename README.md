@@ -2,7 +2,11 @@
 
 JuiceFS Shanghai Meetup · Talk 2 的演讲幻灯片(HTML)。
 
-直接打开 `index.html`,或访问 GitHub Pages。键盘:← → 翻页 · T 切主题 · F 全屏 · O 总览。
+🌐 **在线访问**:<https://serendipityoneinc.github.io/juicefs-meetup-talk/>
+
+或直接打开本地 `index.html`。
+
+**键盘操作**:`← →` 翻页 · `T` 切主题 · `F` 全屏 · `O` 总览 · `S` 演讲者模式(逐字稿 + 计时器 + 下一页预览)
 
 ## 演讲稿
 
