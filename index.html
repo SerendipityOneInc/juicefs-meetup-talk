@@ -68,7 +68,7 @@
     <p class="lede mt-m">一套云中立的统一存储 · 全场景分治优化 · 低成本 × 高性能</p>
     <div class="speaker">
       <img class="av zoomable" src="zhuguangbin.jpg" alt="朱广彬" style="object-fit:cover">
-      <div><b>朱广彬</b><span>星辰征途 · 基础设施团队</span></div>
+      <div><b>朱广彬</b><span>星辰征途 · 基础设施团队</span><span class="mono" style="font-size:13px;color:var(--accent-3);letter-spacing:.02em">allenz@srp.one</span></div>
     </div>
     <div class="deck-footer">
       <span class="mono">#JuiceFS #多云 #AIGC #统一存储</span>
@@ -364,7 +364,7 @@ artifacts.xxx.ai/{botId}/...
       <div class="tl"><div class="ph">Phase 1-2 · 调优</div><div class="big">大文件 +85%</div><div class="sub">writeback + TTL 解锁分布式缓存;但小文件还慢,元数据仍跨公网。</div></div>
       <div class="tl final"><div class="ph">Phase 3 · GCP 内网元数据</div><div class="big">~1000<span style="font-size:14px"> files/s</span></div><div class="sub">RTT → 5.8ms;同区 GCS;NVMe 缓存。<strong>小文件写 ~42×</strong>。</div></div>
     </div>
-    <p class="lede mt-m tc">最大功臣不是缓存盘,是<span class="accent">元数据局部性</span>——那条金句的最佳注脚。</p>
+    <p class="lede mt-m tc">最大功臣不是缓存盘,是<span class="accent">元数据局部性</span>。</p>
     <aside class="notes">
       <p>把前面这些串起来,就是 Agent 场景的性能演进,也是今天最有冲击力的一组数字。</p>
       <p>起点:OCI 元数据加 R2,跨公网。小文件写大概每秒二十四个,元数据 RTT 十二点七毫秒,R2 还偶发三十秒超时打挂 bot。</p>
@@ -399,6 +399,15 @@ artifacts.xxx.ai/{botId}/...
         <p class="kicker">thanks</p>
         <h1 class="h1">谢谢大家<br><span style="background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent">Q &amp; A</span></h1>
         <p class="lede mt-m">云中立 · 全场景分治优化 · 低成本 × 高性能</p>
+        <div class="contact-card" style="display:flex;gap:16px;align-items:center;margin-top:22px;padding:14px 16px;border:1.5px dashed #bedcff;border-radius:8px;background:rgba(255,255,255,.03);max-width:360px">
+          <img class="zoomable" src="zhuguangbin-weixin-qr.jpeg" alt="朱广彬微信" style="width:110px;height:110px;border-radius:6px;background:#fff;padding:4px;display:block;flex-shrink:0">
+          <div style="min-width:0">
+            <div style="font-size:13px;color:var(--text-3);letter-spacing:.08em;text-transform:uppercase">contact</div>
+            <div style="font-size:17px;font-weight:700;color:var(--text-1);margin-top:4px">朱广彬 · 欢迎交流</div>
+            <div class="mono" style="font-size:13px;color:var(--accent-3);margin-top:4px">allenz@srp.one</div>
+            <div style="font-size:12px;color:var(--text-3);margin-top:4px">扫码加微信</div>
+          </div>
+        </div>
       </div>
       <div class="thanks-right">
         <div class="zooclaw" style="display:flex;gap:18px;align-items:center">
